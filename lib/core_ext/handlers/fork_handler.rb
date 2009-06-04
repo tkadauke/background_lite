@@ -1,10 +1,10 @@
-module Background #:nodoc:
-  # This background handler runs the given code block in a forked child process.
+module BackgroundLite #:nodoc:
+  # This background handler runs the given method in a forked child process.
   class ForkHandler
-    # Runs the code block in a forked child process
-    def self.handle(locals, options = {}, &block)
+    # Runs the method in a forked child process
+    def self.handle(object, method, args, options = {})
       fork do
-        block.call
+        object.send(method, *args)
       end
     end
   end

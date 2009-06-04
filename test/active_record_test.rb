@@ -12,13 +12,13 @@ end
 
 class ActiveRecordTest < Test::Unit::TestCase
   def setup
-    Background::Config.default_handler = [:test, :forget]
-    Background::Config.default_error_reporter = :test
+    BackgroundLite::Config.default_handler = [:test, :forget]
+    BackgroundLite::Config.default_error_reporter = :test
   end
   
   def teardown
-    Background::TestHandler.reset
-    Background::TestErrorReporter.last_error = nil
+    BackgroundLite::TestHandler.reset
+    BackgroundLite::TestErrorReporter.last_error = nil
   end
   
   def test_should_correctly_marshal_active_record_objects

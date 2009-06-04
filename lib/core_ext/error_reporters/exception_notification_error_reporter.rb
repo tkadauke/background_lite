@@ -1,6 +1,6 @@
 class MockController #:nodoc:
   def controller_name
-    "Background"
+    "BackgroundLite"
   end
   def action_name
     "do"
@@ -34,7 +34,7 @@ class MockRequest #:nodoc:
   end
 end
 
-module Background #:nodoc:
+module BackgroundLite #:nodoc:
   # Notifies developers about errors per e-mail.
   class ExceptionNotificationErrorReporter
     # This method uses the exception notification plugin to deliver the exception

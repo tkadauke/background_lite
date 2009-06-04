@@ -1,64 +1,43 @@
 require File.expand_path(File.dirname(__FILE__) + '/abstract_unit')
 
-class SomeBackgroundClass
-  def add_three(a, b, c)
-    a + b + c
+
+class BackgroundLiteTest < Test::Unit::TestCase
+  def define_background_class
+    Object.send :remove_const, :SomeBackgroundClass if Object.const_defined?(:SomeBackgroundClass)
+    Object.const_set(:SomeBackgroundClass, Class.new)
+    
+    SomeBackgroundClass.class_eval do
+      def add_three(a, b, c)
+        a + b + c
+      end
+
+      def puts_something
+        puts "something"
+      end
+    end
   end
   
-  def puts_something
-    puts "something"
-  end
-end
-
-class BackgroundTest < Test::Unit::TestCase
   def setup
-    Background::Config.default_handler = [:test, :forget]
-    Background::Config.default_error_reporter = :test
+    define_background_class
+    BackgroundLite::Config.default_handler = [:test, :forget]
+    BackgroundLite::Config.default_error_reporter = :test
   end
   
   def teardown
-    Background::TestHandler.reset
-    Background::TestErrorReporter.last_error = nil
-    Background.enable!
+    BackgroundLite::TestHandler.reset
+    BackgroundLite::TestErrorReporter.last_error = nil
+    BackgroundLite.enable!
   end
   
-  def test_should_run_code_block_in_background
-    background do
-      puts "lala"
-    end
-    assert Background::TestHandler.code =~ /"lala"/
-    assert Background::TestHandler.executed
+  def test_should_decorate_method_without_parameters
+    SomeBackgroundClass.background_method :puts_something
+    obj = SomeBackgroundClass.new
+    assert obj.respond_to?(:puts_something_with_background)
+    assert obj.respond_to?(:puts_something_without_background)
   end
-  
-  def test_should_store_locals
-    a = Regexp.new('x')
-    b = String.new('hello')
-    background :locals => { :a => a, :b => b } do
-      puts "lala"
-    end
-    assert_equal Regexp, Background::TestHandler.locals[:a].class
-    assert_equal String, Background::TestHandler.locals[:b].class
-  end
-  
-  def test_should_work_with_unduppable_locals
-    a = 10
-    b = :symbol
-    c = nil
-    background :locals => { :a => a, :b => b, :c => c } do
-      puts "lala"
-    end
-    assert_equal 10, Background::TestHandler.locals[:a]
-    assert_equal :symbol, Background::TestHandler.locals[:b]
-    assert_equal nil, Background::TestHandler.locals[:c]
-  end
-  
-  def test_should_use_correct_self_object
-    "hallo".background {}
-    assert_equal "hallo", Background::TestHandler.self_object
-  end
-  
-  def test_should_decorate_method_if_called_in_class_without_block
-    SomeBackgroundClass.background :add_three, :params => ['a', 'b', 'c']
+
+  def test_should_decorate_method_with_parameters
+    SomeBackgroundClass.background_method :add_three
     obj = SomeBackgroundClass.new
     assert obj.respond_to?(:add_three_with_background)
     assert obj.respond_to?(:add_three_without_background)
@@ -66,47 +45,58 @@ class BackgroundTest < Test::Unit::TestCase
     assert_not_equal 6, obj.add_three_with_background(1, 2, 3)
   end
   
-  def test_should_decorate_method_without_parameters
-    SomeBackgroundClass.background :puts_something
+  def test_should_run_code_block_in_background
+    SomeBackgroundClass.background_method :add_three
     obj = SomeBackgroundClass.new
-    assert obj.respond_to?(:puts_something_with_background)
-    assert obj.respond_to?(:puts_something_without_background)
+    obj.add_three(1, 2, 3)
+    assert_equal 'add_three_without_background', BackgroundLite::TestHandler.method
+    assert BackgroundLite::TestHandler.executed
   end
   
-  def test_should_execute_block_with_in_process_handler
-    $global_variable = 10
-    background :handler => :in_process do
-      $global_variable *= 2
-    end
-    assert_equal 20, $global_variable
+  def test_should_store_locals
+    SomeBackgroundClass.background_method :add_three
+    obj = SomeBackgroundClass.new
+    obj.add_three(1, 2, 3)
+    assert_equal [1, 2, 3], BackgroundLite::TestHandler.args
+  end
+  
+  def test_should_work_with_unduppable_locals
+    SomeBackgroundClass.background_method :add_three
+    obj = SomeBackgroundClass.new
+    
+    a = 10
+    b = :symbol
+    c = nil
+    
+    obj.add_three(a, b, c)
+    assert_equal 10, BackgroundLite::TestHandler.args[0]
+    assert_equal :symbol, BackgroundLite::TestHandler.args[1]
+    assert_equal nil, BackgroundLite::TestHandler.args[2]
+  end
+  
+  def test_should_use_correct_self_object
+    SomeBackgroundClass.background_method :add_three
+    obj = SomeBackgroundClass.new
+    obj.add_three(1, 2, 3)
+    assert_equal obj, BackgroundLite::TestHandler.object
   end
   
   def test_should_use_specified_handler_and_fallback
-    a = 10
-    actual_handler = background :handler => [:in_process, :test], :locals => { :a => a } do
-      raise "lala"
-    end
-    assert_equal "lala", Background::TestErrorReporter.last_error.message
-    assert_equal :test, actual_handler
+    BackgroundLite::InProcessHandler.expects(:handle).raises(RuntimeError, 'lala')
+    SomeBackgroundClass.background_method :puts_something, :handler => [:in_process, :test]
+    obj = SomeBackgroundClass.new
+    obj.puts_something
+    assert_equal "lala", BackgroundLite::TestErrorReporter.last_error.message
     # check if test handler was executed
-    assert Background::TestHandler.executed
-  end
-  
-  def test_should_use_fallback_on_failure
-    Background::TestHandler.fail_next_time = true
-    actual_handler = background :handler => [:test, :forget] do
-      puts "lala"
-    end
-    assert_not_nil Background::TestErrorReporter.last_error
-    assert_equal :forget, actual_handler
+    assert BackgroundLite::TestHandler.executed
   end
   
   def test_should_use_options_hash_for_handler
-    background :handler => [{:test => { :some_option => 2 }}] do
-      puts "lala"
-    end
-    assert_not_nil Background::TestHandler.options
-    assert_equal 2, Background::TestHandler.options[:some_option]
+    SomeBackgroundClass.background_method :add_three, :handler => [{:test => { :some_option => 2 }}]
+    obj = SomeBackgroundClass.new
+    obj.add_three(1, 2, 3)
+    assert_not_nil BackgroundLite::TestHandler.options
+    assert_equal 2, BackgroundLite::TestHandler.options[:some_option]
   end
   
   def test_should_correctly_marshal_classes
@@ -122,37 +112,30 @@ class BackgroundTest < Test::Unit::TestCase
   end
   
   def test_should_disable_background
-    Background.enable!
-    Background.disable do
-      assert Background.disabled
+    BackgroundLite.enable!
+    BackgroundLite.disable do
+      assert BackgroundLite.disabled
     end
-    assert !Background.disabled
+    assert !BackgroundLite.disabled
   end
 
   def test_should_disable_background_if_already_disabled
-    Background.disable!
-    Background.disable do
-      assert Background.disabled
+    BackgroundLite.disable!
+    BackgroundLite.disable do
+      assert BackgroundLite.disabled
     end
-    assert Background.disabled
+    assert BackgroundLite.disabled
   end
   
   def test_should_reenable_background_when_exception_is_raised_in_block
     begin
-      Background.disable do
+      BackgroundLite.disable do
         raise 'grr'
       end
     rescue RuntimeError => e
       assert_equal 'grr', e.message
     end
     
-    assert !Background.disabled
-  end
-  
-  def test_should_disable_background_while_executing_block
-    Background.enable!
-    background :handler => :in_process do
-      assert Background.disabled
-    end
+    assert !BackgroundLite.disabled
   end
 end

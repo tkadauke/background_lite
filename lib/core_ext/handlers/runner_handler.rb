@@ -1,40 +1,37 @@
 require 'base64'
 
-module Background #:nodoc:
-  # This background handler runs the given code block via script/runner.
+module BackgroundLite #:nodoc:
+  # This background handler runs the method block via script/runner.
   class RunnerHandler
-    # Marshals the block and the local variables and sends it through ActiveMQ to the background processor.
-    def self.handle(locals, options = {}, &block)
+    # Marshals the method and arguments and sends them to script/runner.
+    def self.handle(object, method, args, options = {})
       fork do
-        system(%{script/runner "Background::RunnerHandler.execute '#{encode(locals, &block)}'"})
+        system(%{script/runner "BackgroundLite::RunnerHandler.execute '#{encode(object)}' #{method} '#{encode(args)}'"})
       end
     end
     
-    def self.encode(locals, &block)
-      Base64.encode64(Marshal.dump([block, locals]))
+    def self.encode(obj)
+      Base64.encode64(Marshal.dump(obj))
     end
     
     def self.decode(string)
       message = Base64.decode64(string)
       begin
-        code, variables = Marshal.load(message)
+        obj = Marshal.load(message)
       rescue ArgumentError => e
         # Marshal.load does not trigger const_missing, so we have to do this ourselves.
         e.message.split(' ').last.constantize
         retry
       end
-      obj = variables.delete(:self)
-      [code, obj, variables]
+      obj
     end
     
-    # Executes a marshalled message which was previously sent over ActiveMQ, in the context of the self
-    # object, with all the other local variables defined.
-    def self.execute(message)
-      code, obj, variables = self.decode(message)
-      puts "--- executing code: #{code.source}\n--- with variables: #{variables.inspect}\n--- in object: #{obj.inspect}"
-
-      obj.send :instance_eval, variables.collect { |key, value| "#{key} = variables[:#{key}]" }.join(';')
-      obj.send :instance_eval, code.source
+    # Executes an encoded message which was sent via command line to runner
+    def self.execute(object, method, args)
+      object, args = self.decode(object), self.decode(args)
+      puts "--- executing method: #{method}\n--- with variables: #{args.inspect}\n--- in object: #{object.inspect}"
+      
+      object.send(method, *args)
       puts "--- it happened!"
     end
   end

@@ -1,4 +1,4 @@
-module Background #:nodoc:
+module BackgroundLite #:nodoc:
   # Reports error on $stdout.
   class StderrErrorReporter
     # Prints the exception's error message on $stderr.

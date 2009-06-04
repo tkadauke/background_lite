@@ -1,57 +1,43 @@
-module Background #:nodoc:
-  # This background handler sends the block as well as the local variables through ActiveMessaging
+module BackgroundLite #:nodoc:
+  # This background handler sends the method as well as the arguments through ActiveMessaging
   # to the background poller. If you don't use the ActiveMessaging plugin, then this handler won't
-  # work. In the background poller, you'd need a processor which could look like this:
-  #
-  #    class BackgroundProcessor < ApplicationProcessor
-  #      subscribes_to :background
-  #    
-  #      def on_message(message)
-  #        code, variables = Marshal.load(message)
-  #        obj = variables.delete(:self)
-  #    
-  #        obj.send :instance_eval, variables.collect { |key, value| "#{key} = variables[:#{key}]" }.join(';')
-  #        obj.send :instance_eval, "x = lambda {#{code.source}}; x.call"
-  #      end
-  #    end
-  #    
+  # work.
   class ActiveMessagingHandler
-    # The ActiveMQ queue name through which the block should be serialized.
+    # The ActiveMQ queue name through which the message should be serialized.
     @@queue_name = :background
     cattr_accessor :queue_name
     
-    # Marshals the block and the local variables and sends it through ActiveMQ to the background processor.
+    # Marshals the method and the arguments and sends it through ActiveMQ to the background processor.
     #
     # === Options
     #
-    # queue:: The name of the queue to use to send the code to the background process.
-    def self.handle(locals, options = {}, &block)
-      ActiveMessaging::Gateway.publish((options[:queue] || self.queue_name).to_sym, Marshal.dump([block, locals]))
+    # queue:: The name of the queue to use to send the message to the background process.
+    def self.handle(object, method, args, options = {})
+      ActiveMessaging::Gateway.publish((options[:queue] || self.queue_name).to_sym, Marshal.dump([object, method, args]))
     end
     
     # Decodes a marshalled message which was previously sent over ActiveMQ. Returns an array containing
-    # the code block as a string, the self-object and other local variables.
+    # the object, the method name as a string, and the method arguments.
     def self.decode(message)
       begin
-        code, variables = Marshal.load(message)
+        object, method, args = Marshal.load(message)
       rescue ArgumentError => e
         # Marshal.load does not trigger const_missing, so we have to do this ourselves.
         e.message.split(' ').last.constantize
         retry
       end
       obj = variables.delete(:self)
-      [code, obj, variables]
+      [object, method, args]
     end
     
-    # Executes a marshalled message which was previously sent over ActiveMQ, in the context of the self
-    # object, with all the other local variables defined.
+    # Executes a marshalled message which was previously sent over ActiveMQ, in the context of the
+    # object, with all the arguments passed.
     def self.execute(message)
       begin
-        code, obj, variables = self.decode(message)
-        puts "--- executing code: #{code.source}\n--- with variables: #{variables.inspect}\n--- in object: #{obj.inspect}\n--- with instance variables\n #{obj.instance_variables.collect { |v| v + " ==> " + obj.instance_variable_get(v).inspect }.join("\n")}"
+        object, method, args = self.decode(message)
+        puts "--- executing method: #{method}\n--- with variables: #{args.inspect}\n--- in object: #{object.inspect}"
 
-        obj.send :instance_eval, variables.collect { |key, value| "#{key} = variables[:#{key}]" }.join(';')
-        obj.send :instance_eval, code.source
+        object.send(method, *args)
         puts "--- it happened!"
       rescue Exception => e
         puts e.message
