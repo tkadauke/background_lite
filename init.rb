@@ -3,6 +3,9 @@
 require File.dirname(__FILE__) + '/lib/background'
 require File.dirname(__FILE__) + '/lib/core_ext/background'
 require File.dirname(__FILE__) + '/lib/core_ext/class'
+require File.dirname(__FILE__) + '/lib/core_ext/numeric'
+require File.dirname(__FILE__) + '/lib/core_ext/symbol'
+require File.dirname(__FILE__) + '/lib/core_ext/nil_class'
 Dir.glob(File.dirname(__FILE__) + '/lib/core_ext/handlers/*.rb').each do |handler|
   require handler
 end

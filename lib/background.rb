@@ -49,7 +49,8 @@ module BackgroundLite #:nodoc:
   end
   
   def self.send_to_background(object, method, args, options)
-    args = args.collect { |a| a.clone_for_background rescue a }
+    object = object.clone_for_background
+    args = args.collect { |a| a.clone_for_background }
     
     config = (BackgroundLite::Config.load(options[:config].to_s) || {})
     handler = if BackgroundLite.disabled

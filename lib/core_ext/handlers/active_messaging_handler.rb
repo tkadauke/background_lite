@@ -26,7 +26,6 @@ module BackgroundLite #:nodoc:
         e.message.split(' ').last.constantize
         retry
       end
-      obj = variables.delete(:self)
       [object, method, args]
     end
     
@@ -35,7 +34,7 @@ module BackgroundLite #:nodoc:
     def self.execute(message)
       begin
         object, method, args = self.decode(message)
-        puts "--- executing method: #{method}\n--- with variables: #{args.inspect}\n--- in object: #{object.inspect}"
+        puts "--- executing method: #{method}\n--- with variables: #{args.inspect}\n--- in object: #{object.class.name}, #{object.id}"
 
         object.send(method, *args)
         puts "--- it happened!"

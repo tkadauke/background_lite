@@ -78,7 +78,7 @@ class BackgroundLiteTest < Test::Unit::TestCase
     SomeBackgroundClass.background_method :add_three
     obj = SomeBackgroundClass.new
     obj.add_three(1, 2, 3)
-    assert_equal obj, BackgroundLite::TestHandler.object
+    assert_not_equal obj, BackgroundLite::TestHandler.object
   end
   
   def test_should_use_specified_handler_and_fallback
