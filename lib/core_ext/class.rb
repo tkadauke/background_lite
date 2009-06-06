@@ -96,11 +96,11 @@ class Class
   # * Since it is not possible to serialize singleton objects, all objects are
   #   dup'ed before serialization. This means that all singleton methods get
   #   stripped away on serialization.
-  # * Every class used in a background block or method must be available in the
+  # * Every class used in a background method must be available in the
   #   background process as well.
   # * Subject to the singleton restriction mentioned above, the self object is
-  #   correctly and automatically serialized and can be referenced in the block
-  #   using the self keyword.
+  #   correctly and automatically serialized and can be referenced in the
+  #   background method using the self keyword.
   def background_method(method, options = {})
     alias_method_chain method, :background do |aliased_target, punctuation|
       self.class_eval do

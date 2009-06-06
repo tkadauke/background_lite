@@ -23,8 +23,8 @@ Refer to the Class#background_method documentation for details.
 
 This plugin is an easy-to-use interface for background processing frameworks.
 Theoretically, you can use it in combination with any of the messaging /
-background processing frameworks out there, though there are not many adapters
-implemented yet. However, implementing an adapter is very easy.
+background processing frameworks out there, though there are not many handlers
+implemented yet. However, implementing a handler is very easy.
 
 === What this plugin is NOT
 
@@ -49,15 +49,15 @@ background tasks, as well as forking.
 * Fallback handler that streams messages containing background tasks to disk, to
   later .
 * Error reporting through different channels, depending on the task at hand.
-** Exception notification.
-** Stdout (useful for debugging).
-** Stderr (useful for debugging).
-** Silent, which swallows all exceptions.
+  * Exception notification.
+  * Stdout (useful for debugging).
+  * Stderr (useful for debugging).
+  * Silent, which swallows all exceptions.
 * Supported processing frameworks.
-** ActiveMessaging.
-** script/runner.
-** fork (works only on Unix-like environments).
-** others might follow (it's really easy to write an adapter).
+  * ActiveMessaging.
+  * script/runner.
+  * fork (works only on Unix-like environments).
+  * others might follow (it's really easy to write a handler).
 * Easy configuration, depending on the environment, in config/background.yml.
 * Ability to override the configuration per method.
 
