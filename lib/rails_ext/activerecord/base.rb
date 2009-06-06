@@ -16,7 +16,13 @@ module ActiveRecord
     def clone_for_background
       returning dup do |x|
         x.cleanup_for_background
-        x.instance_variable_set(:@attributes_cache, nil)
+        
+        # taken from ActiveRecord::AttributeMethods::ATTRIBUTE_TYPES_CACHED_BY_DEFAULT
+        type_to_preserve = [DateTime, Time, Date]
+        attr_cache = x.instance_variable_get(:@attributes_cache)
+        attr_cache.each do |key, value|
+          attr_cache[key] = nil unless type_to_preserve.include?(attr_cache[key].class)
+        end
         x.instance_variable_set(:@errors, nil)
         x.clear_association_cache
       end
