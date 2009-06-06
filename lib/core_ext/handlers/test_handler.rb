@@ -1,5 +1,6 @@
 module BackgroundLite #:nodoc:
-  # This handler is used in a testing environment. It allows for introspection of last call to the handle method.
+  # This handler is used in a testing environment. It allows for introspection
+  # of last call to the handle method.
   class TestHandler
     # contains the object on which the method is executed.
     cattr_accessor :object
@@ -7,7 +8,8 @@ module BackgroundLite #:nodoc:
     cattr_accessor :method
     # contains the method's arguments
     cattr_accessor :args
-    # If true, the execution of TestHandler#handle will fail the next time it's called.
+    # If true, the execution of TestHandler#handle will fail the next time it's
+    # called.
     cattr_accessor :fail_next_time
     # True, if TestHandler#handle was executed.
     cattr_accessor :executed

@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/abstract_unit')
 
-class Model < ActiveRecord::Base
+class Model < ActiveRecord::Base # :nodoc:
   attr_accessor :what
   
   def self.columns
@@ -10,7 +10,7 @@ class Model < ActiveRecord::Base
   end
 end
 
-class ActiveRecordTest < Test::Unit::TestCase
+class ActiveRecordTest < Test::Unit::TestCase # :nodoc:
   def setup
     BackgroundLite::Config.default_handler = [:test, :forget]
     BackgroundLite::Config.default_error_reporter = :test

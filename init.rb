@@ -1,7 +1,5 @@
-# Include hook code here
-
 require File.dirname(__FILE__) + '/lib/background'
-require File.dirname(__FILE__) + '/lib/core_ext/background'
+require File.dirname(__FILE__) + '/lib/core_ext/object'
 require File.dirname(__FILE__) + '/lib/core_ext/class'
 require File.dirname(__FILE__) + '/lib/core_ext/numeric'
 require File.dirname(__FILE__) + '/lib/core_ext/symbol'

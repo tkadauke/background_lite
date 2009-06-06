@@ -10,22 +10,6 @@ module BackgroundLite #:nodoc:
       end
     end
     
-    def self.encode(obj)
-      Base64.encode64(Marshal.dump(obj))
-    end
-    
-    def self.decode(string)
-      message = Base64.decode64(string)
-      begin
-        obj = Marshal.load(message)
-      rescue ArgumentError => e
-        # Marshal.load does not trigger const_missing, so we have to do this ourselves.
-        e.message.split(' ').last.constantize
-        retry
-      end
-      obj
-    end
-    
     # Executes an encoded message which was sent via command line to runner
     def self.execute(object, method, args)
       object, args = self.decode(object), self.decode(args)
@@ -33,6 +17,24 @@ module BackgroundLite #:nodoc:
       
       object.send(method, *args)
       puts "--- it happened!"
+    end
+  
+  protected
+    def self.encode(obj)
+      Base64.encode64(Marshal.dump(obj))
+    end
+  
+    def self.decode(string)
+      message = Base64.decode64(string)
+      begin
+        obj = Marshal.load(message)
+      rescue ArgumentError => e
+        # Marshal.load does not trigger const_missing, so we have to do this
+        # ourselves.
+        e.message.split(' ').last.constantize
+        retry
+      end
+      obj
     end
   end
 end

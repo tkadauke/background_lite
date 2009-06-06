@@ -1,0 +1,79 @@
+=== BackgroundLite
+
+This Rails plugin supersedes the background plugin, available here:
+
+  http://github.com/imedo/background/tree/master
+
+It allows you to execute methods in a background task with a very intuitive and
+easy syntax. It is as easy as that:
+
+  class MyModel
+    def complex_operation(argument)
+      ...
+    end
+    background_method :complex_operation
+  end
+
+Now, whenever MyModel#complex_operation is called, it will be run in the
+background process.
+
+Refer to the Class#background_method documentation for details.
+
+=== What this plugin is
+
+This plugin is an easy-to-use interface for background processing frameworks.
+Theoretically, you can use it in combination with any of the messaging /
+background processing frameworks out there, though there are not many adapters
+implemented yet. However, implementing an adapter is very easy.
+
+=== What this plugin is NOT
+
+This plugin is NOT a background processing framework. To make it work
+efficiently, you need an existing framework installed and configured. Right now,
+support for the ActiveMessaging framework is implemented.
+
+However, there is out-of-the-box support for using script/runner to perform
+background tasks, as well as forking.
+
+=== When to use it
+
+* Your Rails process gets unresponsive due to some time-consuming task.
+* The task does not need to show an immediate effect.
+
+=== Features
+
+* Background processing using multiple background processing frameworks.
+* Fallback processing, if your background processing framework isn't responding
+  correctly.
+* Works out-of-the-box with script/runner and forking.
+* Fallback handler that streams messages containing background tasks to disk, to
+  later .
+* Error reporting through different channels, depending on the task at hand.
+** Exception notification.
+** Stdout (useful for debugging).
+** Stderr (useful for debugging).
+** Silent, which swallows all exceptions.
+* Supported processing frameworks.
+** ActiveMessaging.
+** script/runner.
+** fork (works only on Unix-like environments).
+** others might follow (it's really easy to write an adapter).
+* Easy configuration, depending on the environment, in config/background.yml.
+* Ability to override the configuration per method.
+
+=== Dependencies
+
+There are no dependencies besides ActiveSupport, which is required by Rails
+anyways.
+
+=== Installation
+
+Just copy the background_lite folder into vendor/plugins, and you're good to go.
+
+=== Configuration
+
+Depending on the background processing framework that you are using, you might
+have to do some configuration. See the documentation of the respective
+background handler for details.
+
+Copyright (c) 2008-2009 imedo GmbH, released under the MIT license

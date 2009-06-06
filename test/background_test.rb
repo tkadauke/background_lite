@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/abstract_unit')
 
 
-class BackgroundLiteTest < Test::Unit::TestCase
+class BackgroundLiteTest < Test::Unit::TestCase # :nodoc:
   def define_background_class
     Object.send :remove_const, :SomeBackgroundClass if Object.const_defined?(:SomeBackgroundClass)
     Object.const_set(:SomeBackgroundClass, Class.new)

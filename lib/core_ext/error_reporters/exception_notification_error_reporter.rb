@@ -3,7 +3,7 @@ class MockController #:nodoc:
     "BackgroundLite"
   end
   def action_name
-    "do"
+    "send_to_background"
   end
 end
 
