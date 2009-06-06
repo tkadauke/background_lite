@@ -34,7 +34,7 @@ class MockRequest #:nodoc:
   end
 end
 
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # Notifies developers about errors per e-mail.
   class ExceptionNotificationErrorReporter
     # This method uses the exception notification plugin to deliver the exception

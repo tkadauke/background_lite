@@ -1,4 +1,4 @@
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # Does not report errors at all.
   class SilentNotificationErrorReporter
     # Suppresses the error message by not reporting anything.

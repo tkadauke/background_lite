@@ -1,4 +1,4 @@
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # Executes the method in-process. This handler is probably most useful as a
   # fallback handler.
   class InProcessHandler

@@ -1,4 +1,4 @@
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # This background handler sends the method as well as the arguments through
   # ActiveMessaging to the background poller. If you don't use the
   # ActiveMessaging plugin, then this handler won't work.

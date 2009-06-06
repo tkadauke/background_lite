@@ -1,4 +1,4 @@
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # This handler is used in a testing environment. It allows for introspection
   # of last call to the handle method.
   class TestHandler

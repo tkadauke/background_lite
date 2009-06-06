@@ -1,4 +1,4 @@
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # Stores the serialized message on disk. This handler is probably most useful
   # as a fallback handler.
   class DiskHandler

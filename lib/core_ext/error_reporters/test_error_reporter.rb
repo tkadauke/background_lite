@@ -1,4 +1,4 @@
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # This class is used for reporting errors in a test environment.
   class TestErrorReporter
     # Stores the last error

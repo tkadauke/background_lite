@@ -1,4 +1,4 @@
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # This background handler runs the given method in a forked child process.
   class ForkHandler
     # Runs the method in a forked child process

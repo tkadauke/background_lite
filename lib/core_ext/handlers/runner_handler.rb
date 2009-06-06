@@ -1,6 +1,6 @@
 require 'base64'
 
-module BackgroundLite #:nodoc:
+module BackgroundLite
   # This background handler runs the method block via script/runner.
   class RunnerHandler
     # Marshals the method and arguments and sends them to script/runner.
