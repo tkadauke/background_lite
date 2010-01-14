@@ -4,6 +4,7 @@ module BackgroundLite
     # Prints the exception's error message on $stdout.
     def self.report(error)
       puts error.message
+      puts error.backtrace
     end
   end
 end
