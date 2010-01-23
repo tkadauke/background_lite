@@ -6,7 +6,7 @@ module BackgroundLite
     # Marshals the method and arguments and sends them to script/runner.
     def self.handle(object, method, args, options = {})
       fork do
-        system(%{script/runner "BackgroundLite::RunnerHandler.execute '#{encode(object)}' #{method} '#{encode(args)}'"})
+        system(%{script/runner "BackgroundLite::RunnerHandler.execute '#{encode(object)}', '#{method}', '#{encode(args)}'"})
       end
     end
     
