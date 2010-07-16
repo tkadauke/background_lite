@@ -3,7 +3,9 @@ require 'rake/testtask'
 require 'rake/rdoctask'
 require 'gemmer'
 
-Gemmer::Tasks.new('background_lite')
+Gemmer::Tasks.new('background_lite') do |t|
+  t.release_via :rubygems
+end
 
 desc 'Default: run unit tests.'
 task :default => :test
