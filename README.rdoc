@@ -45,9 +45,9 @@ background tasks, as well as forking.
 * Background processing using multiple background processing frameworks.
 * Fallback processing, if your background processing framework isn't responding
   correctly.
-* Works out-of-the-box with script/runner and forking.
+* Works out-of-the-box with script/runner and forking and DRb.
 * Fallback handler that streams messages containing background tasks to disk, to
-  later .
+  later replay jobs that failed because of a temporary error.
 * Error reporting through different channels, depending on the task at hand.
   * Exception notification.
   * Stdout (useful for debugging).
@@ -55,8 +55,10 @@ background tasks, as well as forking.
   * Silent, which swallows all exceptions.
 * Supported processing frameworks.
   * ActiveMessaging.
+  * Resque
   * script/runner.
   * fork (works only on Unix-like environments).
+  * DRb with an example runner in scripts/background_queue (not really suitable for production use)
   * others might follow (it's really easy to write a handler).
 * Easy configuration, depending on the environment, in config/background.yml.
 * Ability to override the configuration per method.
@@ -76,4 +78,4 @@ Depending on the background processing framework that you are using, you might
 have to do some configuration. See the documentation of the respective
 background handler for details.
 
-Copyright (c) 2008-2009 imedo GmbH, released under the MIT license
+Copyright (c) 2008-2010 imedo GmbH, released under the MIT license
