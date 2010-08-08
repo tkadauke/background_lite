@@ -19,7 +19,13 @@ module BackgroundLite
     end
     
     def self.default_config #:nodoc:
-      @default_config ||= (config['default'] || {})
+      @default_config ||= begin
+        if config[RAILS_ENV]
+          (config[RAILS_ENV]['default'] || config['default'] || {})
+        else
+          (config['default'] || {})
+        end
+      end
     end
     
     def self.load(configuration) #:nodoc:
