@@ -1,3 +1,6 @@
+require 'digest/sha1'
+require 'logger' 
+
 # This module holds methods for background handling
 module BackgroundLite
   # This class is for configuring defaults of the background processing
@@ -14,6 +17,9 @@ module BackgroundLite
     @@default_error_reporter = :stdout
     cattr_accessor :default_error_reporter
     
+    # Logger for debugging purposes 
+    cattr_writer :default_logger
+    
     def self.config #:nodoc:
       @config ||= YAML.load(File.read("#{RAILS_ROOT}/config/background.yml")) rescue { RAILS_ENV => {} }
     end
@@ -26,6 +32,17 @@ module BackgroundLite
           (config['default'] || {})
         end
       end
+    end
+
+    def self.default_logger #:nodoc:
+      fallback_logger = if Object.const_defined?("RAILS_DEFAULT_LOGGER")
+        RAILS_DEFAULT_LOGGER
+      else
+        logger = Logger.new(STDOUT)
+        logger.level = Logger::WARN
+        logger
+      end
+      @@default_logger ||= config['logger'] || fallback_logger
     end
     
     def self.load(configuration) #:nodoc:
@@ -83,17 +100,25 @@ module BackgroundLite
       [options.delete(:handler) || config[:handler] || BackgroundLite::Config.default_handler].flatten
     end
     reporter = options.delete(:reporter) || config[:reporter] || BackgroundLite::Config.default_error_reporter
+    logger = options.delete(:logger) || config[:logger] || BackgroundLite::Config.default_logger
     
     handler.each do |hand|
-      options = {}
       if hand.is_a? Hash
         raise "Malformed handler options Hash" if hand.keys.size != 1
         options = hand.values.first
         hand = hand.keys.first
       end
+      options ||= {}
       
       begin
         BackgroundLite.disable do
+          if logger.debug?
+            # Transaction ID is currently only used for debugging to find corresponding
+            # messages on both sides of the queue. It is optional and should be expected 
+            # to be nil
+            options[:transaction_id] = Digest::SHA1.hexdigest(object.to_s + method.to_s + args.inspect + Time.now.to_s)
+            logger.debug("Sending to background: Object: #{object.inspect} Method: #{method} Args: #{args.inspect} Options: #{options.inspect}")      
+          end
           "BackgroundLite::#{hand.to_s.camelize}Handler".constantize.handle(object, method, args, options)
         end
         

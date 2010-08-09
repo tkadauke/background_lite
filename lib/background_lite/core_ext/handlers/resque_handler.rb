@@ -3,12 +3,16 @@ module BackgroundLite
   # Resque to the background process.
   class ResqueHandler
     @queue = :background
-    
+   
+    class << self
+      attr_accessor :queue
+    end
+
     # Marshals the method and the arguments and sends it through Resque
     # to the background process.
     def self.handle(object, method, args, options = {})
       require 'resque'
-      Resque.enqueue(self, Base64.encode64(Marshal.dump([object, method, args])))
+      Resque.enqueue(self, Base64.encode64(Marshal.dump([object, method, args, options[:transaction_id]])))
     end
     
     # Decodes a marshalled message which was previously sent over
@@ -16,14 +20,14 @@ module BackgroundLite
     # as a string, and the method arguments.
     def self.decode(message)
       begin
-        object, method, args = Marshal.load(Base64.decode64(message))
+        object, method, args, transaction_id = Marshal.load(Base64.decode64(message))
       rescue ArgumentError => e
         # Marshal.load does not trigger const_missing, so we have to do this
         # ourselves.
         e.message.split(' ').last.constantize
         retry
       end
-      [object, method, args]
+      [object, method, args, transaction_id]
     end
     
     # Executes a marshalled message which was previously sent over
@@ -31,14 +35,19 @@ module BackgroundLite
     # passed.
     def self.perform(message)
       begin
-        object, method, args = self.decode(message)
-        puts "--- executing method: #{method}\n--- with variables: #{args.inspect}\n--- in object: #{object.class.name}, #{object.id}"
-
+        object, method, args, transaction_id = self.decode(message)
+        logger = BackgroundLite::Config.default_logger
+        if logger.debug?
+          logger.debug "--- executing method: #{method}"
+          logger.debug "--- with variables: #{args.inspect}"
+          logger.debug "--- in object: #{object.class.name}, #{object.id}"
+          logger.debug "--- Transaction ID: #{transaction_id}"
+        end
         object.send(method, *args)
-        puts "--- it happened!"
+        logger.debug "--- it happened!" if logger.debug?
       rescue Exception => e
-        puts e.message
-        puts e.backtrace
+        logger.fatal e.message
+        logger.fatal e.backtrace
       end
     end
   end
