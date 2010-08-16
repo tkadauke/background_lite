@@ -34,9 +34,9 @@ module BackgroundLite
     # Resque, in the context of the object, with all the arguments
     # passed.
     def self.perform(message)
+      logger = BackgroundLite::Config.default_logger
       begin
         object, method, args, transaction_id = self.decode(message)
-        logger = BackgroundLite::Config.default_logger
         if logger.debug?
           logger.debug "--- executing method: #{method}"
           logger.debug "--- with variables: #{args.inspect}"
@@ -48,6 +48,7 @@ module BackgroundLite
       rescue Exception => e
         logger.fatal e.message
         logger.fatal e.backtrace
+        raise e
       end
     end
   end
