@@ -64,6 +64,7 @@ module BackgroundLite
       rescue Exception => e
         logger.fatal e.message
         logger.fatal e.backtrace
+        "BackgroundLite::#{BackgroundLite::Config.default_error_reporter.to_s.camelize}ErrorReporter".constantize.report(e)
         raise e
       end
     end
