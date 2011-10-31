@@ -1,5 +1,6 @@
 require 'digest/sha1'
 require 'logger' 
+require 'benchmark'
 
 # This module holds methods for background handling
 module BackgroundLite
@@ -17,8 +18,13 @@ module BackgroundLite
     @@default_error_reporter = :stdout
     cattr_accessor :default_error_reporter
     
-    # Logger for debugging purposes 
+    # Logger for debugging purposes.
     cattr_writer :default_logger
+    
+    # Time in seconds a job may take before it is logged into slow log.
+    # Set to 0 for no logging.
+    @@slow_threshold = 0
+    cattr_accessor :slow_threshold
     
     def self.config #:nodoc:
       @config ||= YAML.load(File.read("#{RAILS_ROOT}/config/background.yml")) rescue { RAILS_ENV => {} }
@@ -119,7 +125,14 @@ module BackgroundLite
             options[:transaction_id] = Digest::SHA1.hexdigest(object.to_s + method.to_s + args.inspect + Time.now.to_s)
             logger.debug("Sending to background: Object: #{object.inspect} Method: #{method} Args: #{args.inspect} Options: #{options.inspect}")      
           end
-          "BackgroundLite::#{hand.to_s.camelize}Handler".constantize.handle(object, method, args, options)
+          
+          time = Benchmark.realtime do
+            "BackgroundLite::#{hand.to_s.camelize}Handler".constantize.handle(object, method, args, options)
+          end
+
+          if BackgroundLite::Config.slow_threshold > 0 && time > BackgroundLite::Config.slow_threshold
+            logger.fatal("Slow background job (#{time}s): #{object.class.name}##{method}(#{args.inspect}) on object #{object.inspect}")
+          end
         end
         
         return hand
@@ -127,5 +140,6 @@ module BackgroundLite
         "BackgroundLite::#{reporter.to_s.camelize}ErrorReporter".constantize.report(e)
       end
     end
+    return nil
   end
 end
