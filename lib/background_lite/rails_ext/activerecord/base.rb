@@ -14,7 +14,7 @@ module ActiveRecord
     #
     # To clean up data specific to your class, use cleanup_for_background.
     def clone_for_background
-      returning dup do |x|
+      dup.tap do |x|
         x.cleanup_for_background
         
         # taken from ActiveRecord::AttributeMethods::ATTRIBUTE_TYPES_CACHED_BY_DEFAULT
