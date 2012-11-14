@@ -17,6 +17,7 @@ module ActiveRecord
       returning dup do |x|
         x.cleanup_for_background
         x.send(:instance_variable_set, "@new_record", new_record?)
+        x.send(:instance_variable_set, "@changed_attributes", instance_variable_get("@changed_attributes"))
         x.id = self.id
         
         # taken from ActiveRecord::AttributeMethods::ATTRIBUTE_TYPES_CACHED_BY_DEFAULT
