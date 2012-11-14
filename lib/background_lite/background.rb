@@ -27,7 +27,7 @@ module BackgroundLite
     cattr_accessor :slow_threshold
     
     def self.config #:nodoc:
-      @config ||= YAML.load(File.read("#{RAILS_ROOT}/config/background.yml")) rescue { RAILS_ENV => {} }
+      @config ||= YAML.load(File.read("#{Rails.root}/config/background.yml")) rescue { RAILS_ENV => {} }
     end
     
     def self.default_config #:nodoc:
@@ -41,8 +41,8 @@ module BackgroundLite
     end
 
     def self.default_logger #:nodoc:
-      fallback_logger = if Object.const_defined?("RAILS_DEFAULT_LOGGER")
-        RAILS_DEFAULT_LOGGER
+      fallback_logger = if Object.const_defined?("Rails")
+        Rails.logger
       else
         logger = Logger.new(STDOUT)
         logger.level = Logger::WARN
