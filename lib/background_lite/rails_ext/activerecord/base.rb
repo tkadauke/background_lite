@@ -16,6 +16,8 @@ module ActiveRecord
     def clone_for_background
       returning dup do |x|
         x.cleanup_for_background
+        x.send(:instance_variable_set, "@new_record", new_record?)
+        x.id = self.id
         
         # taken from ActiveRecord::AttributeMethods::ATTRIBUTE_TYPES_CACHED_BY_DEFAULT
         type_to_preserve = [DateTime, Time, Date]
