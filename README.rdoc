@@ -1,9 +1,5 @@
 === BackgroundLite
 
-This Rails plugin supersedes the background plugin, available here:
-
-  http://github.com/imedo/background/tree/master
-
 It allows you to execute methods in a background task with a very intuitive and
 easy syntax. It is as easy as that:
 
@@ -78,4 +74,4 @@ Depending on the background processing framework that you are using, you might
 have to do some configuration. See the documentation of the respective
 background handler for details.
 
-Copyright (c) 2008-2010 imedo GmbH, released under the MIT license
+Copyright (c) 2008-2013 Thomas Kadauke, released under the MIT license

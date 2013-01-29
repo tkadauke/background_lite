@@ -4,8 +4,8 @@ Gem::Specification.new do |s|
   s.version   =   "0.3.2"
   s.date      =   Date.today.strftime('%Y-%m-%d')
   s.author    =   "Thomas Kadauke"
-  s.email     =   "tkadauke@imedo.de"
-  s.homepage  =   "http://www.imedo.de/"
+  s.email     =   "thomas.kadauke@googlemail.com"
+  s.homepage  =   "https://github.com/tkadauke/background_lite"
   s.summary   =   "Run any method in the background"
   s.files     =   Dir.glob("{lib,rails}/**/*") + Dir.glob("*.rb")
 
