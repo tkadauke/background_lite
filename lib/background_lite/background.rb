@@ -1,6 +1,8 @@
 require 'digest/sha1'
 require 'logger' 
 require 'benchmark'
+require 'active_support/core_ext/class/attribute_accessors'
+require 'active_support/core_ext/module/attribute_accessors'
 
 # This module holds methods for background handling
 module BackgroundLite

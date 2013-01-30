@@ -15,5 +15,7 @@ Gem::Specification.new do |s|
   s.bindir = 'bin'
   s.executables = Dir['bin/*'].collect { |file| File.basename(file) }
   
+  s.add_dependency('active_support', '>=2.3.0')
+  
   s.require_path = "lib"
 end

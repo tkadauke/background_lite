@@ -1,12 +1,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/abstract_unit')
+require 'active_support/version'
 
-class Model < ActiveRecord::Base # :nodoc:
-  attr_accessor :what
+if ActiveSupport::VERSION::STRING < "3.0.0"
+  class Model < ActiveRecord::Base # :nodoc:
+    attr_accessor :what
   
-  def self.columns
-    []
+    def self.columns
+      []
+    end
+    def self.connection
+    end
   end
-  def self.connection
+else
+  class Model
+    include ActiveModel
+    attr_accessor :id, :what
   end
 end
 
