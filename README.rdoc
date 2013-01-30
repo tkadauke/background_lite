@@ -1,7 +1,7 @@
 === BackgroundLite
 
-It allows you to execute methods in a background task with a very intuitive and
-easy syntax. It is as easy as that:
+This gem allows you to execute methods in a background task with a very
+intuitive and easy syntax. It is as easy as that:
 
   class MyModel
     def complex_operation(argument)
@@ -15,16 +15,16 @@ background process.
 
 Refer to the Class#background_method documentation for details.
 
-=== What this plugin is
+=== What this gem is
 
-This plugin is an easy-to-use interface for background processing frameworks.
+This gem is an easy-to-use interface for background processing frameworks.
 Theoretically, you can use it in combination with any of the messaging /
 background processing frameworks out there, though there are not many handlers
 implemented yet. However, implementing a handler is very easy.
 
-=== What this plugin is NOT
+=== What this gem is NOT
 
-This plugin is NOT a background processing framework. To make it work
+This gem is NOT a background processing framework. To make it work
 efficiently, you need an existing framework installed and configured. Right now,
 support for the ActiveMessaging framework is implemented.
 
@@ -54,7 +54,7 @@ background tasks, as well as forking.
   * Resque
   * script/runner.
   * fork (works only on Unix-like environments).
-  * DRb with an example runner in scripts/background_queue (not really suitable for production use)
+  * DRb with an example runner executable "background_queue" (not really suitable for production use)
   * others might follow (it's really easy to write a handler).
 * Easy configuration, depending on the environment, in config/background.yml.
 * Ability to override the configuration per method.
@@ -66,7 +66,11 @@ anyways.
 
 === Installation
 
-Just copy the background_lite folder into vendor/plugins, and you're good to go.
+  gem install background_lite
+
+or use Bundler
+
+  gem "background_lite"
 
 === Configuration
 
