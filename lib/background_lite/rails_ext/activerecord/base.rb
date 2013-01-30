@@ -14,7 +14,7 @@ module ActiveRecord
     #
     # To clean up data specific to your class, use cleanup_for_background.
     def clone_for_background
-      returning dup do |x|
+      dup.tap do |x|
         x.cleanup_for_background
         x.send(:instance_variable_set, "@new_record", new_record?)
         x.send(:instance_variable_set, "@changed_attributes", instance_variable_get("@changed_attributes"))
