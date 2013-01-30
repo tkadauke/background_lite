@@ -1,6 +1,6 @@
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 require 'gemmer'
 
 Gemmer::Tasks.new('background_lite') do |t|
