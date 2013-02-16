@@ -1,0 +1,20 @@
+PATH
+  remote: .
+  specs:
+    background_lite (0.4)
+      active_support (>= 2.3.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    active_support (3.0.0)
+      activesupport (= 3.0.0)
+    activesupport (3.0.0)
+    gemmer (0.1.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  background_lite!
+  gemmer
