@@ -40,7 +40,7 @@ module BackgroundLite
         if logger.debug?
           logger.debug "--- executing method: #{method}"
           logger.debug "--- with variables: #{args.inspect}"
-          logger.debug "--- in object: #{object.class.name}, #{object.id}"
+          logger.debug "--- in object: #{[object.class.name, (object.id if object.respond_to?(:id))].compact.inspect}"
           logger.debug "--- Transaction ID: #{transaction_id}"
         end
         object.send(method, *args)

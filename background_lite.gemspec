@@ -1,7 +1,7 @@
 Gem::Specification.new do |s| 
   s.platform  =   Gem::Platform::RUBY
   s.name      =   "background_lite"
-  s.version   =   "0.5"
+  s.version   =   "0.5.1"
   s.date      =   Time.now.strftime('%Y-%m-%d')
   s.author    =   "Thomas Kadauke"
   s.email     =   "thomas.kadauke@googlemail.com"
