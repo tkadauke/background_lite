@@ -29,13 +29,13 @@ module BackgroundLite
     cattr_accessor :slow_threshold
     
     def self.config #:nodoc:
-      @config ||= YAML.load(File.read("#{Rails.root}/config/background.yml")) rescue { RAILS_ENV => {} }
+      @config ||= YAML.load(File.read("#{Rails.root}/config/background.yml")) rescue { Rails.env => {} }
     end
     
     def self.default_config #:nodoc:
       @default_config ||= begin
-        if config[RAILS_ENV]
-          (config[RAILS_ENV]['default'] || config['default'] || {})
+        if config[Rails.env]
+          (config[Rails.env]['default'] || config['default'] || {})
         else
           (config['default'] || {})
         end
@@ -57,7 +57,7 @@ module BackgroundLite
       if configuration.blank?
         default_config
       else
-        loaded_config = ((config[RAILS_ENV] || {})[configuration] || {})
+        loaded_config = ((config[Rails.env] || {})[configuration] || {})
         default_config.merge(loaded_config.symbolize_keys || {})
       end
     end

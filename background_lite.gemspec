@@ -1,8 +1,8 @@
 Gem::Specification.new do |s| 
   s.platform  =   Gem::Platform::RUBY
   s.name      =   "background_lite"
-  s.version   =   "0.4"
-  s.date      =   Date.today.strftime('%Y-%m-%d')
+  s.version   =   "0.5"
+  s.date      =   Time.now.strftime('%Y-%m-%d')
   s.author    =   "Thomas Kadauke"
   s.email     =   "thomas.kadauke@googlemail.com"
   s.homepage  =   "https://github.com/tkadauke/background_lite"
@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.bindir = 'bin'
   s.executables = Dir['bin/*'].collect { |file| File.basename(file) }
   
-  s.add_dependency('active_support', '>=2.3.0')
+  s.add_dependency('activesupport', '>=2.3.0')
   s.add_development_dependency 'gemmer'
   
   s.require_path = "lib"
