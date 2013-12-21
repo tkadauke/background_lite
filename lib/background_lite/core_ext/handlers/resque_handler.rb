@@ -12,6 +12,7 @@ module BackgroundLite
     # to the background process.
     def self.handle(object, method, args, options = {})
       require 'resque'
+      Rails.logger.debug "Background message: " + Base64.encode64(Marshal.dump([object, method, args, options[:transaction_id]]))
       Resque.enqueue(self, Base64.encode64(Marshal.dump([object, method, args, options[:transaction_id]])))
     end
     
